@@ -249,6 +249,7 @@ def main():
                 "--week", str(week),
                 "--rtype", "kaleidoscope",
                 "--threads", str(threads), 
+                "--min_conf", "0.1", 
                 "--combine_results"
             ]
             
