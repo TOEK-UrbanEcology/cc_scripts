@@ -81,7 +81,20 @@ sudo /opt/birdnet-venv/bin/pip install pandas
 sudo chmod -R a+rwx /opt/birdnet-venv /opt/BirdNET-Analyzer
 
 # ------------------------------
-# 7. Final message
+# 7. Download add_user.sh to ubuntu user's home
+# ------------------------------
+wget -O /home/ubuntu/add_user.sh https://raw.githubusercontent.com/TOEK-UrbanEcology/cc_scripts/main/add_user.sh
+sudo chown ubuntu:ubuntu /home/ubuntu/add_user.sh
+sudo chmod +x /home/ubuntu/add_user.sh
+
+# ------------------------------
+# 8. Download run_birdnet.py to /etc/skel for new users
+# ------------------------------
+sudo wget -O /etc/skel/run_birdnet.py https://raw.githubusercontent.com/TOEK-UrbanEcology/cc_scripts/main/run_birdnet.py
+sudo chmod +x /etc/skel/run_birdnet.py
+
+# ------------------------------
+# 9. Final message
 # ------------------------------
 echo "✅ Server setup complete"
 echo "🕊️ BirdNET-Analyzer installed globally and virtual environment created"
