@@ -1,0 +1,91 @@
+---
+title: "Project ReadME" # Change this to your project name!
+author: "Your Name" # Place your name here
+date: "21/05/2025" # The current date
+output:
+  md_document:
+    variant: gfm  # GitHub-flavored markdown
+---
+
+<!-- Update the above information (title, author, date) to your project! 
+     If you use an underscore in your title you have to escape it with a 
+     backslash (i.e. \_)! -->
+
+
+<!-- Do not touch! -->
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+<!-- Please complete all of the below information and include as much detail 
+     as possible! !IMPORTANT! YOU MUST PLACE TWO SPACES or <br> AT THE END OF 
+     EACH LINE TO ENSURE THAT THE LINE BREAKS OCCURR CORRECTLY! -->
+## Project information:
+
+**Project title:** [The full title of your project]  
+**Supervisor name:** [Name of your supervisor(s)]  
+**Supervisor email:** [Email(s) of your supervisor(s)]  
+**Project type:** [E.g. bachelor, master, etc.]  
+**Course name:** [If project done for a course]  
+**Semester:** [Course semester, or semester your project completed]  
+
+<!-- Please add bibliographic information, or details for any associated 
+     publications, theses, project reports. Also please include your final 
+     report, thesis, etc. in the project folder! Add or remove any details 
+     as necessary. -->
+## Associated publications:
+
+**Publication 1:**  
+**Title:** [Title of the publication]  
+**Authors:** [Full list of authors]  
+**Type:** [Article/Book/Chapter/Thesis/Report]  
+**Journal/Publisher:** [Name of the journal or publisher]  
+**Year:** [Publication year]  
+**DOI:** [Digital Object Identifier]  
+**URL:** [If available]  
+**Status:** [Published/In press/Submitted/In preparation]  
+
+**Publication 2:**  
+**Title:** [Title of the publication]  
+**Authors:** [Full list of authors]  
+**Type:** [Article/Book/Chapter/Thesis/Report]  
+**Journal/Publisher:** [Name of the journal or publisher]  
+**Year:** [Publication year]  
+**DOI:** [Digital Object Identifier]  
+**URL:** [If available]  
+**Status:** [Published/In press/Submitted/In preparation]  
+
+
+<!-- To add members, just copy paste the block with the name and email. 
+     Be sure to keep a blank line between each block! Email addresses are 
+     important so you can be reached should your data be used in the future 
+     for publication! -->
+## Project members:
+
+**Name:** [Your name]  
+**Email:** [Your email]  
+
+**Name:** [Jane Doe]  
+**Email:** [janeDoe@web.de]  
+
+
+<!-- Additional site information can be added if you feel it is pertinent. 
+     Just add **<title>** followed by the information -->
+## Site information:
+
+**Location:** [Location(s)]   
+**n Sites monitored:** [Number of sites monitored]  
+
+
+<!-- You must include the metadata.csv file for your project in the folder! -->
+**NOTE:** The metadata.csv file contains all the detailed site information!
+
+<!-- If multiple recorder types were used copy the whole recorder type block
+      and add all the information for the second type! Also if additional
+      fields are required, please add them! -->
+## Technical information:
+
+**Recorder type:** [e.g. BAR_LT]  
+**Sample rate:** [e.g. 48kHz]  
+**Gain:** [e.g 50dB]  
+**Schedule:** [e.g. Continuous for 7 days]  
