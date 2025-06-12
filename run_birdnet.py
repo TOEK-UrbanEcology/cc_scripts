@@ -31,31 +31,15 @@ import traceback
 import logging
 import sys
 
-# Read all csv files in the current directory to a list
-def readCsv(path):
-    csvList = []
-    for root, dirs, files in os.walk(path):
-        for file in files:
-            if file.endswith(".csv"):
-                csvList.append(os.path.join(root, file))
-    csvList = list(dict.fromkeys(csvList))
-    return csvList 
+# Get date from filename
+def extract_date(filename):
+    m = re.search(r'(\d{8})', filename)
+    return m.group(1) if m else None
 
-
-# Combine all csv files in the list into one csv with a column for file name
-def combineCsvWithFileName(csvList, fileName):
-    # Create a new csv file
-    with open(fileName, "w", newline='') as f:
-        writer = csv.writer(f)
-        writer.writerow(["start", "end", "scientificName", "commonName", "confidence", "fileName"])
-        for file in csvList:
-            name = getFileName(file)
-            with open(file, "r") as csvfile:
-                reader = csv.reader(csvfile)
-                next(reader, None)
-                for row in reader:
-                    row.append(name)
-                    writer.writerow(row)
+# Get time from filename
+def extract_time(filename):
+    m = re.search(r'(\d{6})', filename)
+    return m.group(1) if m else None
 
 # Combine all .csv files in the csvList into one csv file using the same headings as the first file in the list
 def combineCsv(csvList, fileName):
@@ -71,60 +55,12 @@ def combineCsv(csvList, fileName):
                 for row in reader:
                     writer.writerow(row)
                     
-
-# Now ignoring the new BIrdNET_analyisi_params.csv file
-def combineCsv_plusSite(csvList, fileName, site):
-    # Create a new csv file
-    with open(fileName, "w", newline='') as f:
-        writer = csv.writer(f)
-        for i, file in enumerate(csvList):
-            # Skip the 'BirdNET_analysis_params.csv' file when combining
-            if "BirdNET_analysis_params.csv" in file:
-                continue  # Skip this file
-            
-            with open(file, "r") as csvfile:
-                reader = csv.reader(csvfile)
-                if i == 0:
-                    # Write the header for the first file
-                    writer.writerow(next(reader) + ['site'])
-                else:
-                    # Skip the header for subsequent files
-                    next(reader, None)
-                for row in reader:
-                    # Add the site value to each row
-                    writer.writerow(row + [site])
-
-
-# get file name from path
-def getFileName(path):
-    fileName = os.path.basename(path)
-    # strip everything after the first .
-    fileName = fileName[:fileName.find(".")]
-    # add .wav to the end
-    fileName = fileName + ".wav"
-    return fileName
-
 # Get calender week from date
 def getCalenderWeek(date):
     #date = datetime.datetime.strptime(date, "%Y-%m-%d")
     date = datetime.datetime.strptime(date, "%d/%m/%Y")
     return date.isocalendar()[1]
 
-# Get date from folder name. Folders are named AAD[1 or 2]_YYYYMMDD_Brandstr
-def getDate(folderName):
-    res = re.search(r"\d{8}", folderName)
-    return res.group()
-
-# Get list of subfolders containing .wav files in the inPath
-def getSubDirs(inPath):
-    subDirs = []
-    for root, dirs, files in os.walk(inPath):
-        for dir in dirs:
-            if glob.glob(os.path.join(root, dir, "*.wav")):
-                subDirs.append(os.path.join(root, dir))
-    return subDirs
-  
-  
 # Return the total length of all .wav files in a folder in minutes.
 def total_wav_length(directory):
     total_length = 0
@@ -142,6 +78,7 @@ def total_wav_length(directory):
     total_length = total_length / 60
     return total_length
 
+# Move the combined results file to the outPath, rename it to site.csv and add a 'site' column
 def move_and_rename_results(site, tempPath, outPath):
     # Step 1: Set the desired filename and savePath
     filename = str(site) + ".csv"  # Filename based on the site name
@@ -175,13 +112,18 @@ def main():
     parser.add_argument("--o", type=str, help="Output folder path")
     parser.add_argument("--meta", type=str, help="Metadata csv file path")
     parser.add_argument("--threads", type=int, default=1, help="Number of threads to use")
-    
-    args = parser.parse_args()
+    parser.add_argument("--min_conf", type=float, default=0.1, help="Minimum confidence threshold. Values in [0.00001, 0.99]")
+    parser.add_argument("--rtype", type=str, default="kaleidoscope", help="Specifies output format. Values in [‘table’, ‘audacity’, ‘kaleidoscope’, ‘csv’]")
+    parser.add_argument("--results_name", type=str, default="birdnet_results.csv", help="Final combined results CSV file name")
+
+    args, unknown_args = parser.parse_known_args()
 
     # Set variables from command line arguments
     outPath = args.o
     metaData = args.meta
     threads = args.threads
+    min_conf = args.min_conf
+    rtype = args.rtype
 
     # read metaData csv file
     metaDataList = pd.read_csv(metaData)
@@ -247,11 +189,11 @@ def main():
                 "--lat", str(lat),
                 "--lon", str(lon),
                 "--week", str(week),
-                "--rtype", "kaleidoscope",
+                "--rtype", str(rtype),
                 "--threads", str(threads), 
-                "--min_conf", "0.1", 
+                "--min_conf", str(min_conf), 
                 "--combine_results"
-            ]
+            ] + unknown_args  # <-- Append any extra args
             
             # Join the command list into a single string for printing
             command_str = " ".join(command)
@@ -284,7 +226,17 @@ def main():
     csv_files = [os.path.join(outPath, f) for f in os.listdir(outPath) if f.endswith('.csv')]
 
     # Call the combineCsv function with the list of CSV files and output file name
-    combineCsv(csv_files, os.path.join(outPath, 'birdnet_results.csv'))
+    combineCsv(csv_files, os.path.join(outPath, args.results_name))
+
+    # Add date and timestamp columns based of filename
+    results_file = os.path.join(outPath, args.results_name)
+    df = pd.read_csv(results_file)
+    df['date'] = df['IN FILE'].apply(extract_date)
+    df['timestamp'] = df['IN FILE'].apply(extract_time)
+    df.to_csv(results_file, index=False)
+
+    # Log saving information
+    logging.info(f"Final results saved to {results_file}")
 
 if __name__ == '__main__':
     main()

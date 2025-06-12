@@ -6,6 +6,7 @@ set -e  # Exit on any error
 # ------------------------------
 sudo apt-get update && sudo apt-get upgrade -y
 sudo apt-get install -y nfs-common r-base gdebi-core wget git
+sudo apt install -y libfontconfig1-dev libfreetype6-dev libpng-dev libtiff5-dev libjpeg-dev build-essential libcurl4-gnutls-dev libxml2-dev libssl-dev libharfbuzz-dev libfribidi-dev
 
 # ------------------------------
 # 1b. Add CRAN repository for latest R
