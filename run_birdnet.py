@@ -38,8 +38,7 @@ def extract_date(filename):
 
 # Get time from filename
 def extract_time(filename):
-    name_without_ext = filename.replace('.wav', '').replace('.WAV', '')
-    match = re.search(r'\d{8}.*?(\d{6})(?=\D|$)', name_without_ext)
+    match = re.search(r'\d{8}.*?(\d{6})(?=\D|$)', filename)
     return match.group(1) if match else None
 
 # Combine all .csv files in the csvList into one csv file using the same headings as the first file in the list
